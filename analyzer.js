@@ -12,7 +12,7 @@ function extractClasses(content) {
   return classes
 }
 
-function analyzeClasses(classes) {
+function analyzeClasses(classes, file) {
   const report = {
     padding: {},
     margin: {},
@@ -21,21 +21,15 @@ function analyzeClasses(classes) {
   }
 
   classes.forEach(cls => {
-    if (cls.startsWith("px-") || cls.startsWith("py-")) {
-      report.padding[cls] = (report.padding[cls] || 0) + 1
+    const add = (group) => {
+      if (!report[group][cls]) report[group][cls] = []
+      report[group][cls].push(file)
     }
 
-    if (cls.startsWith("m-") || cls.startsWith("mx-") || cls.startsWith("my-")) {
-      report.margin[cls] = (report.margin[cls] || 0) + 1
-    }
-
-    if (cls.startsWith("rounded")) {
-      report.radius[cls] = (report.radius[cls] || 0) + 1
-    }
-
-    if (cls.startsWith("max-w")) {
-      report.container[cls] = (report.container[cls] || 0) + 1
-    }
+    if (cls.startsWith("px-") || cls.startsWith("py-")) add("padding")
+    if (cls.startsWith("m-") || cls.startsWith("mx-") || cls.startsWith("my-")) add("margin")
+    if (cls.startsWith("rounded")) add("radius")
+    if (cls.startsWith("max-w")) add("container")
   })
 
   return report
